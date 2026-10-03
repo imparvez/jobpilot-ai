@@ -2,6 +2,12 @@ import type { Request, Response } from "express";
 import mongoose from "mongoose";
 
 import { Job } from '../models/Job.js';
+import { createJobSchema, updateJobSchema } from '../schemas/jobSchema.js'
+
+const INVALID_JOB_DATA: string = 'Invalid Job Data';
+const INVALID_JOB_ID: string = 'Invalid job ID';
+const NO_JOBS_FOUND_WITH_GIVEN_ID: string = 'No jobs found with given ID';
+const FAILED_TO_RETRIEVE_THE_JOBS: string = 'Failed to retrieve the Job';
 
 export const JobController = {
     getJobs: async (req: Request, res: Response) => {
@@ -16,31 +22,25 @@ export const JobController = {
             console.error(error);
     
             res.status(500).json({
-                message: "Failed to retrieve jobs"
+                message: FAILED_TO_RETRIEVE_THE_JOBS
             });
         }
     },
     createJob: async (req: Request, res: Response) => {
         try {
-            const {
-                company,
-                role,
-                status
-            } = req.body
-            if(!company || !role || !status) {
+            const result = createJobSchema.safeParse(req.body);
+            if(!result.success) {
+                console.log(result.error);
                 res
                     .status(400) // Bad Request
                     .json({ // Returning with Job is empty message
-                        message: 'Job is empty'
+                        message: INVALID_JOB_DATA,
+                        errors: result.error.issues
                     });
                 return;
             };
     
-            const newJob = await Job.create({
-                company,
-                role,
-                status
-            });
+            const newJob = await Job.create(result.data);
             res.status(201).json({
                 message: 'Job created',
                 job: newJob
@@ -59,7 +59,7 @@ export const JobController = {
     
             if(!mongoose.Types.ObjectId.isValid(jobId)) {
                 res.status(400).json({
-                    message: "Invalid job ID"
+                    message: INVALID_JOB_ID
                 });
                 return;
             }
@@ -68,7 +68,7 @@ export const JobController = {
                 res
                     .status(404) // Job not found
                     .json({
-                        message: 'No jobs found with given ID'
+                        message: NO_JOBS_FOUND_WITH_GIVEN_ID
                     })
                 return;
             }
@@ -82,36 +82,38 @@ export const JobController = {
             res
                 .status(500)
                 .json({
-                    message: 'Failed to retrieve the Job'
+                    message: FAILED_TO_RETRIEVE_THE_JOBS
                 })
         }
     },
     updateJob: async (req: Request, res: Response) => {
         try {
             const jobId = req.params.id;
-            const {
-                company,
-                role,
-                status
-            } = req.body
+            const result = updateJobSchema.safeParse(req.body);
     
-            if(!company && !role && !status) {
+            if(!result.success) {
+                console.log(result.error);
                 res
                     .status(400) // Bad Request
                     .json({ // Returning with Job is empty message
-                        message: 'Job is empty'
+                        message: INVALID_JOB_DATA,
+                        errors: result.error.issues
                     });
                 return;
             };
             // const 
             if(!mongoose.Types.ObjectId.isValid(jobId)) {
                 res.status(400).json({
-                    message: "Invalid job ID"
+                    message: INVALID_JOB_ID
                 });
                 return;
             }
     
-            const updatedJob = await Job.findByIdAndUpdate(jobId, req.body, { new: true });
+            const updatedJob = await Job.findByIdAndUpdate(
+                jobId, 
+                result.data, 
+                { new: true }
+            );
     
             if (!updatedJob) {
                 res.status(404).json({
@@ -139,7 +141,7 @@ export const JobController = {
     
             if(!mongoose.Types.ObjectId.isValid(jobId)) {
                 res.status(400).json({
-                    message: "Invalid job ID"
+                    message: INVALID_JOB_ID
                 });
                 return;
             }
@@ -149,7 +151,7 @@ export const JobController = {
                 res
                     .status(404) // Job not found
                     .json({
-                        message: 'No jobs found with given ID'
+                        message: NO_JOBS_FOUND_WITH_GIVEN_ID
                     })
                 return;
             }
