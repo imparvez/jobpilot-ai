@@ -13,3 +13,6 @@ export const updateJobSchema = z.object({
 }).refine((data) => Object.keys(data).length > 0, {
     message: "At least one field is required"
 });
+
+export type CreateJobInput = z.infer<typeof createJobSchema>;
+export type UpdateJobInput = z.infer<typeof updateJobSchema>;

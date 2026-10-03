@@ -11,9 +11,14 @@ export type CreateNewJobInput = {
     status: string,
 }
 
-export type UpdateJobInput = {
+// Data being updated
+export type UpdateJobData = {
+    company?: string,
+    role?: string,
+    status?: string,
+}
+
+export type UpdateJobRequest = {
     id: string;
-    company: string,
-    role: string,
-    status: string,
+    data: UpdateJobData
 }

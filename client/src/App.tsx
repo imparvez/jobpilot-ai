@@ -74,7 +74,12 @@ function App() {
       return;
     }
 
-    const jobUpdated = await updateJob({id: editingJobId, company, role, status})
+    const jobUpdated = await updateJob({
+      id: editingJobId, 
+      data: { 
+        company, role, status 
+      }
+    });
 
     if (jobUpdated) {
       loadJobs();
