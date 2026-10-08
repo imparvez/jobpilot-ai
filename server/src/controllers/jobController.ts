@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 
 import { Job } from '../models/Job.js';
 import { createJobSchema, updateJobSchema } from '../schemas/jobSchema.js'
+import { analyseDescription } from "../services/aiService.js";
 
 const INVALID_JOB_DATA: string = 'Invalid Job Data';
 const INVALID_JOB_ID: string = 'Invalid job ID';
@@ -112,7 +113,7 @@ export const JobController = {
             const updatedJob = await Job.findByIdAndUpdate(
                 jobId, 
                 result.data, 
-                { new: true }
+                { new: true, runValidators: true }
             );
     
             if (!updatedJob) {
@@ -168,6 +169,58 @@ export const JobController = {
                 .status(500)
                 .json({
                     message: 'Failed to delete the Job'
+                })
+        }
+    },
+    analyseJob: async (req: Request, res: Response) => {
+        try {
+            // Fetch job id from params
+            const jobId = req.params.id;
+
+            // Validate the job ID
+            if(!mongoose.Types.ObjectId.isValid(jobId)) {
+                res.status(400).json({
+                    message: INVALID_JOB_ID
+                });
+                return;
+            }
+            // Find the job
+            const job = await Job.findById(jobId);
+            // If job not found show 404 job not found error.
+            if(!job) {
+                res
+                    .status(404) // Job not found
+                    .json({
+                        message: NO_JOBS_FOUND_WITH_GIVEN_ID
+                    })
+                return;
+            }
+            
+            const analysis = await analyseDescription(
+                job.company,
+                job.role,
+                job.description
+            );
+
+            if(!analysis) {
+                res.status(502).json({
+                    message: "AI did not return a valid analysis"
+                });
+                return;
+            }
+
+            res
+                .status(200)
+                .json({
+                    message: 'Job analysed successfully',
+                    analysis
+                })
+        } catch (err) {
+            console.error(err);
+            res
+                .status(500)
+                .json({
+                    message: 'Failed to analyse the Job'
                 })
         }
     }

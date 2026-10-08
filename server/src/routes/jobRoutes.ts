@@ -8,3 +8,4 @@ router.post("/", JobController.createJob);
 router.get("/:id", JobController.getJob);
 router.patch("/:id", JobController.updateJob);
 router.delete("/:id", JobController.deleteJob);
+router.post("/:id/analyse", JobController.analyseJob);

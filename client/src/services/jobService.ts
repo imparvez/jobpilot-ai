@@ -9,7 +9,7 @@ export const getJobs = async (): Promise<Job[]> => {
     return data.jobs;
 }
 
-export const createNewJob = async ({ company, role, status }: CreateNewJobInput): Promise<Job> => {
+export const createNewJob = async ({ company, role, status, description }: CreateNewJobInput): Promise<Job> => {
     const response = await fetch(`${base_url}/${jobs}`, {
       method: 'POST',
       headers: {
@@ -18,7 +18,8 @@ export const createNewJob = async ({ company, role, status }: CreateNewJobInput)
       body: JSON.stringify({
         company,
         role,
-        status
+        status,
+        description
       })
     });
 

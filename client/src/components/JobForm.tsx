@@ -4,11 +4,13 @@ type JobFormProps = {
     company: string,
     role: string,
     status: string,
+    description: string,
     isEditOn: boolean,
 
     setCompany: (value: string) => void,
     setRole: (value: string) => void;
     setStatus: (value: string) => void;
+    setDescription: (value: string) => void;
 
     handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void,
     updateJob: () => void;
@@ -20,9 +22,11 @@ const JobForm = ({
     setCompany,
     setRole,
     setStatus,
+    setDescription,
     company,
     role,
     status,
+    description,
     isEditOn,
     updateJob,
     handleCancelEdit
@@ -55,6 +59,12 @@ const JobForm = ({
             <option value="INTERVIEW">Interview</option>
             <option value="REJECTED">Rejected</option>
           </select>
+
+          <textarea
+            placeholder='Description'
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
 
           {isEditOn ? (
             <>

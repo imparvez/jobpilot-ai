@@ -7,9 +7,11 @@ import { createNewJob, deleteJob, getJobs, updateJob } from './services/jobServi
 
 function App() {
   const [jobs, setJobs] = useState<Job[]>([]);
+
   const [company, setCompany] = useState('');
   const [role, setRole] = useState('');
   const [status, setStatus] = useState('');
+  const [description, setDescription] = useState(''); 
   const [isEditOn, setIsEditOn] = useState(false);
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
 
@@ -24,7 +26,7 @@ function App() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newJob = await createNewJob({company, role, status});
+    const newJob = await createNewJob({company, role, status, description});
     if(newJob) {
 
       setJobs((prevJobs) => [
@@ -35,6 +37,7 @@ function App() {
       setCompany('');
       setRole('');
       setStatus('');
+      setDescription('');
     }
   }
 
@@ -51,7 +54,8 @@ function App() {
       _id,
       company,
       role,
-      status
+      status,
+      description
     } = job;
     setIsEditOn(true);
     setEditingJobId(_id);
@@ -59,6 +63,7 @@ function App() {
     setCompany(company);
     setRole(role);
     setStatus(status);
+    setDescription(description ?? '');
   }
 
   const handleCancelEdit = () => {
@@ -67,6 +72,7 @@ function App() {
     setCompany('');
     setRole('');
     setStatus('');
+    setDescription('');
   }
 
   const handleUpdateJob = async () => {
@@ -77,7 +83,7 @@ function App() {
     const jobUpdated = await updateJob({
       id: editingJobId, 
       data: { 
-        company, role, status 
+        company, role, status, description
       }
     });
 
@@ -87,6 +93,7 @@ function App() {
       setCompany('');
       setRole('');
       setStatus('');
+      setDescription('');
 
       setIsEditOn(false);
       setEditingJobId(null);
@@ -113,9 +120,11 @@ function App() {
           setCompany={setCompany}
           setRole={setRole}
           setStatus={setStatus}
+          setDescription={setDescription}
           company={company}
           role={role}
           status={status}
+          description={description}
           isEditOn={isEditOn}
           updateJob={handleUpdateJob}
           handleCancelEdit={handleCancelEdit}
