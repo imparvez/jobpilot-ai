@@ -1,5 +1,6 @@
 import express from 'express';
 import { JobController } from '../controllers/jobController.js';
+import { JobFitController } from '../controllers/jobFitController.js';
 
 export const router = express.Router();
 
@@ -9,3 +10,7 @@ router.get("/:id", JobController.getJob);
 router.patch("/:id", JobController.updateJob);
 router.delete("/:id", JobController.deleteJob);
 router.post("/:id/analyse", JobController.analyseJob);
+router.post(
+    "/:jobId/match/:candidateId",
+    JobFitController.matchJob
+);

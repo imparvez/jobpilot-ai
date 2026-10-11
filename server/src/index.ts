@@ -4,6 +4,7 @@ import "dotenv/config";
 import cors from 'cors';
 
 import { router } from './routes/jobRoutes.js'
+import { candidateProfileRouter } from './routes/candidateProfileRoutes.js';
 
 const app = express(); // Creates the express application.
 app.use(cors());
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/jobs", router);
+app.use("/candidate-profiles", candidateProfileRouter);
 
 async function startServer() {
     try {
